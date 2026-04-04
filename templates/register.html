@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un compte - {{ config.site_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --success: #10b981;
+            --success-hover: #059669;
+            --bg-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --text: #f8fafc;
+            --primary: #6366f1;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at bottom left, #1e293b, #0f172a);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .blob {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--success);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+            bottom: -100px;
+            left: -100px;
+        }
+
+        .register-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            margin: 20px;
+        }
+
+        h2 { font-weight: 600; margin-bottom: 0.5rem; color: var(--success); }
+        p.subtitle { color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            color: #94a3b8;
+            margin-left: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--success);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 1rem;
+            font-size: 1rem;
+        }
+
+        .btn-register:hover {
+            background: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+        }
+
+        .footer-link {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .footer-link a {
+            color: var(--success);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="blob"></div>
+
+    <div class="register-card">
+        <i class="fas fa-user-plus" style="font-size: 2rem; color: var(--success); margin-bottom: 1rem;"></i>
+        <h2>Rejoindre l'EST</h2>
+        <p class="subtitle">Créez votre profil pour commencer à apprendre.</p>
+
+        <form action="{{ url_for('auth_register') }}" method="POST">
+            <div class="form-grid">
+                <div class="input-group full-width">
+                    <label>Pseudo</label>
+                    <input type="text" name="username" placeholder="ex: Reda_21" required>
+                </div>
+
+                <div class="input-group full-width">
+                    <label>Email (Optionnel)</label>
+                    <input type="email" name="email" placeholder="votre@email.com">
+                </div>
+
+                <div class="input-group">
+                    <label>Langue Maternelle</label>
+                    <select name="native_lang">
+                        <option value="Arabe">Arabe</option>
+                        <option value="Français">Français</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Langue Cible</label>
+                    <select name="target_lang">
+                        <option value="Anglais">Anglais</option>
+                        <option value="Espagnol">Espagnol</option>
+                        <option value="Allemand">Allemand</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Mot de passe</label>
+                    <input type="password" name="password" placeholder="••••••••" required>
+                </div>
+                <div class="input-group">
+                    <label>Confirmation</label>
+                    <input type="password" name="confirm_password" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-register">S'inscrire maintenant</button>
+        </form>
+
+        <p class="footer-link">
+            Déjà un compte ? <a href="{{ url_for('login_page') }}">Connectez-vous</a>
+        </p>
+    </div>
+
+    <script>
+        // Simple validation check for passwords
+        const form = document.querySelector('form');
+        form.onsubmit = (e) => {
+            const pass = document.getElementsByName('password')[0].value;
+            const confirm = document.getElementsByName('confirm_password')[0].value;
+            if (pass !== confirm) {
+                alert("Les mots de passe ne correspondent pas !");
+                e.preventDefault();
+            }
+        };
+    </script>
+</body>
+</html>

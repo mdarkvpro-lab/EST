@@ -5,117 +5,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <title>Mon Compte - {{ config.site_name if config else 'EST Social' }}</title>
     <style>
-        body { background-color: #ffffff; color: #3c4043; }
-        .google-card { border: 1px solid #dadce0; border-radius: 8px; }
-        .input-focus:focus { border: 2px solid #1a73e8; background: white; }
+        :root { --google-blue: #1a73e8; }
+        body { background-color: #ffffff; color: #3c4043; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        .google-card { 
+            border: 1px solid #dadce0; 
+            border-radius: 12px; 
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-focus {
+            border: 1px solid #dadce0;
+            transition: all 0.2s;
+        }
+        .input-focus:focus { 
+            border-color: var(--google-blue); 
+            box-shadow: 0 0 0 1px var(--google-blue);
+            background: white;
+        }
+
+        /* Profile Image Animation */
+        .profile-container {
+            position: relative;
+            transition: transform 0.2s ease;
+        }
+        .profile-container:hover { transform: scale(1.02); }
+
+        .btn-upgrade {
+            background-color: var(--google-blue);
+            transition: all 0.2s;
+        }
+        .btn-upgrade:hover {
+            box-shadow: 0 1px 3px 1px rgba(60,64,67,.15), 0 1px 2px 0 rgba(60,64,67,.3);
+            filter: brightness(1.1);
+        }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="min-h-screen pb-20 animate__animated animate__fadeIn">
 
     <nav class="border-b p-4 flex justify-between items-center sticky top-0 bg-white z-50">
         <div class="flex items-center space-x-4">
             <a href="/" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition">
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
-            <span class="text-xl font-medium text-gray-700">Compte</span>
+            <span class="text-xl font-normal text-gray-700">Compte EST Social</span>
         </div>
         <div class="flex items-center space-x-3">
-            <img src="/static/uploads/{{ curr_user.profile_pic }}" class="w-8 h-8 rounded-full border">
+             <div class="w-8 h-8 rounded-full border overflow-hidden">
+                {% if curr_user.profile_pic and curr_user.profile_pic != '0' %}
+                    <img src="/static/uploads/{{ curr_user.profile_pic }}" class="w-full h-full object-cover">
+                {% else %}
+                    <img src="https://www.gstatic.com/images/branding/product/1x/avatar_circle_blue_512dp.png" class="w-full h-full opacity-60">
+                {% endif %}
+            </div>
         </div>
     </nav>
 
-    <div class="max-w-2xl mx-auto mt-8 px-4">
-
-        <div class="text-center mb-10">
-            <h1 class="text-2xl font-normal mb-2">Informations personnelles</h1>
-            <p class="text-sm text-gray-500">Gérez vos informations et la sécurité de votre compte.</p>
+    <div class="max-w-2xl mx-auto mt-12 px-4">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl font-light text-gray-800 mb-2">Informations personnelles</h1>
+            <p class="text-sm text-gray-500">Gérez votre identité au sein de la communauté.</p>
         </div>
 
-        <div class="google-card p-6 mb-6">
-            <h2 class="text-lg font-medium mb-6">Profil</h2>
+        <div class="google-card p-8 mb-8 shadow-sm">
+            <h2 class="text-lg font-medium mb-10 flex items-center text-gray-800">
+                <i class="fa-solid fa-circle-user mr-3 text-blue-600"></i> Profil Public
+            </h2>
 
-            <form action="/update_profile" method="POST" enctype="multipart/form-data" class="space-y-8">
-                <div class="flex items-center justify-between border-b pb-6">
+            <form action="/update_profile" method="POST" enctype="multipart/form-data" class="space-y-10">
+                
+                <div class="flex items-center justify-between border-b border-gray-100 pb-8">
                     <div>
-                        <p class="text-xs font-bold text-gray-500 uppercase mb-1">Photo de profil</p>
-                        <p class="text-sm text-gray-400">Une photo aide à personnaliser votre compte</p>
+                        <p class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Photo de profil</p>
+                        <p class="text-xs text-gray-400">Une photo aide vos camarades de l'EST à vous reconnaître.</p>
                     </div>
-                    <div class="relative group cursor-pointer" onclick="document.getElementById('avatar-input').click()">
-                        <img id="preview" src="/static/uploads/{{ curr_user.profile_pic }}"
-                             class="w-16 h-16 rounded-full object-cover border group-hover:opacity-70 transition">
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 text-white text-xs bg-black/20 rounded-full">
-                            <i class="fa-solid fa-camera"></i>
+                    
+                    <div class="profile-container group cursor-pointer" onclick="document.getElementById('avatar-input').click()">
+                        <div class="w-20 h-20 rounded-full border border-gray-200 overflow-hidden relative">
+                            {% if curr_user.profile_pic and curr_user.profile_pic != '0' %}
+                                <img id="preview" src="/static/uploads/{{ curr_user.profile_pic }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <img id="preview-placeholder" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="w-full h-full object-cover opacity-80">
+                                <img id="preview" src="" class="hidden w-full h-full object-cover">
+                            {% endif %}
+                            
+                            <div class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <i class="fa-solid fa-camera text-white"></i>
+                            </div>
+                        </div>
+                        <div class="absolute -bottom-1 -right-1 bg-white border border-gray-200 w-7 h-7 rounded-full flex items-center justify-center text-gray-500 shadow-sm z-10">
+                            <i class="fa-solid fa-pen text-[10px]"></i>
                         </div>
                         <input type="file" id="avatar-input" name="avatar" class="hidden" onchange="previewImg(this)">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6">
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-500 uppercase">Nom d'utilisateur</label>
-                        <input type="text" name="username" value="{{ curr_user.username }}"
-                               class="w-full p-3 bg-gray-50 border rounded-lg outline-none input-focus transition-all font-medium">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-500 uppercase">Bio / Description</label>
-                        <textarea name="bio" class="w-full p-3 bg-gray-50 border rounded-lg outline-none input-focus transition-all h-24 resize-none">{{ curr_user.bio }}</textarea>
+                <div class="group">
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Nom d'utilisateur</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-light">@</span>
+                        <input type="text" name="username" value="{{ curr_user.username }}" 
+                               class="input-focus w-full pl-10 pr-4 py-3.5 bg-white rounded-xl outline-none text-gray-700">
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 pt-4">
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-500 uppercase">Langue Maternelle</label>
-                        <select name="native_lang" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
-                            <option value="Arabe" {% if curr_user.native_lang == 'Arabe' %}selected{% endif %}>Arabe</option>
-                            <option value="Français" {% if curr_user.native_lang == 'Français' %}selected{% endif %}>Français</option>
-                        </select>
+                <div class="group">
+                    <label class="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2">Bio</label>
+                    <textarea name="bio" placeholder="Ajoutez une description..." 
+                              class="input-focus w-full p-4 bg-white rounded-xl outline-none h-32 resize-none text-gray-700">{{ curr_user.bio }}</textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6 pt-2">
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Langue Native</label>
+                        <div class="relative">
+                            <select name="native_lang" class="input-focus w-full p-3.5 bg-gray-50/50 rounded-xl outline-none appearance-none cursor-pointer">
+                                <option value="Arabe" {% if curr_user.native_lang == 'Arabe' %}selected{% endif %}>Arabe MA 🇲🇦</option>
+                                <option value="Français" {% if curr_user.native_lang == 'Français' %}selected{% endif %}>Français FR 🇫🇷</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-xs font-bold text-gray-500 uppercase">Langue à Apprendre</label>
-                        <select name="target_lang" class="w-full p-3 bg-gray-50 border rounded-lg outline-none border-blue-200">
-                            <option value="Anglais" {% if curr_user.target_lang == 'Anglais' %}selected{% endif %}>Anglais</option>
-                            <option value="Espagnol" {% if curr_user.target_lang == 'Espagnol' %}selected{% endif %}>Espagnol</option>
-                        </select>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Objectif</label>
+                        <div class="relative">
+                            <select name="target_lang" class="input-focus w-full p-3.5 bg-gray-50/50 rounded-xl outline-none appearance-none cursor-pointer">
+                                <option value="Anglais" {% if curr_user.target_lang == 'Anglais' %}selected{% endif %}>Anglais US 🇺🇸</option>
+                                <option value="Espagnol" {% if curr_user.target_lang == 'Espagnol' %}selected{% endif %}>Espagnol ES 🇪🇸</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-blue-400 text-[10px] pointer-events-none"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex justify-end pt-4">
-                    <button type="submit" class="bg-[#1a73e8] text-white px-8 py-2.5 rounded-lg font-medium hover:shadow-md transition active:scale-95">
-                        Enregistrer
+                <div class="flex justify-end pt-6">
+                    <button type="submit" class="btn-upgrade text-white px-12 py-3 rounded-full font-bold text-sm tracking-wide shadow-md active:scale-95 transition-all">
+                        Enregistrer les modifications
                     </button>
                 </div>
             </form>
         </div>
 
-        {% if session['role'] == 'admin' %}
-        <div class="google-card p-6 border-blue-100 bg-blue-50/30">
-            <div class="flex items-center space-x-3 mb-6 text-blue-700">
-                <i class="fa-solid fa-shield-halved text-xl"></i>
-                <h2 class="text-lg font-medium">Paramètres Administrateur</h2>
-            </div>
-
-            <form action="/update_site" method="POST" class="space-y-4">
-                <div class="space-y-1">
-                    <label class="text-xs font-black text-blue-600 uppercase tracking-widest">Nom du Mawqi3 (Site Name)</label>
-                    <div class="flex space-x-2">
-                        <input type="text" name="site_name" value="{{ config.site_name if config else 'EST SOCIAL' }}"
-                               class="flex-1 p-3 bg-white border rounded-lg outline-none focus:border-blue-500">
-                        <button type="submit" class="bg-slate-800 text-white px-6 py-2 rounded-lg text-sm font-bold">Appliquer</button>
-                    </div>
-                    <p class="text-[10px] text-gray-400 mt-1 italic">* Ce nom apparaîtra en haut de chaque page pour tous les utilisateurs.</p>
-                </div>
-            </form>
-        </div>
-        {% endif %}
-
-        <div class="mt-12 text-center">
-            <a href="/logout" class="text-red-500 font-medium text-sm hover:underline">
-                Se déconnecter de tous les appareils
+        <div class="text-center mt-12 mb-10">
+            <a href="/logout" class="text-gray-400 hover:text-red-500 transition-colors text-sm font-medium">
+                <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Se déconnecter
             </a>
         </div>
-
     </div>
 
     <script>
@@ -123,7 +162,14 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('preview').src = e.target.result;
+                    const preview = document.getElementById('preview');
+                    const placeholder = document.getElementById('preview-placeholder');
+                    
+                    if(placeholder) placeholder.classList.add('hidden');
+                    
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    preview.classList.add('animate__animated', 'animate__fadeIn');
                 }
                 reader.readAsDataURL(input.files[0]);
             }
